@@ -1,73 +1,77 @@
-# React + TypeScript + Vite
+# feedback-board-fullstack
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Projeto fullstack em formato monorepo usando workspaces.
 
-Currently, two official plugins are available:
+## Estrutura do projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- apps/backend → API em Express + TypeScript
+- apps/frontend → Frontend em React + Vite + TypeScript
 
-## React Compiler
+## Requisitos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js 18+ (ou 20+)
+- NPM
+- Git
 
-## Expanding the ESLint configuration
+## Instalação
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Na raiz do projeto, execute:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+npm install
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Rodando o backend
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Na raiz do projeto, execute:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+npm run dev:backend
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+O backend irá subir em:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+http://localhost:3001
+
+Teste de saúde:
+
+http://localhost:3001/health
+
+## Rodando o frontend
+
+Na raiz do projeto, execute:
+
+npm run dev:frontend
+
+O frontend irá subir normalmente em:
+
+http://localhost:5173
+
+## Variáveis de ambiente (Frontend)
+
+Arquivo: apps/frontend/.env
+
+Conteúdo:
+
+VITE_API_URL=http://localhost:3001
+
+## Scripts úteis (na raiz)
+
+- npm run dev:backend → roda só o backend
+- npm run dev:frontend → roda só o frontend
+- npm run dev → roda backend e frontend juntos (se suportado no seu terminal)
+
+## Objetivo do projeto
+
+Criar um sistema de Feedback Board com:
+
+- API REST em Node + Express
+- Frontend em React
+- CRUD de feedbacks
+- Filtros e busca
+- Testes automatizados
+- Documentação
+- Boas práticas de arquitetura e organização de código
+
+## Status
+
+Projeto em desenvolvimento
+
+## Autor
+Luiz Felipe Carvalho.
