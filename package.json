@@ -9,5 +9,9 @@
     "dev": "npm run dev -w apps/backend & npm run dev -w apps/frontend",
     "dev:backend": "npm run dev -w apps/backend",
     "dev:frontend": "npm run dev -w apps/frontend"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.3.0",
+    "prisma": "^7.3.0"
   }
 }
