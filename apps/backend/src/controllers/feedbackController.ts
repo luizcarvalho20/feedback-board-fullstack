@@ -2,6 +2,15 @@ import { Request, Response } from "express";
 import { prisma } from "../config/prisma";
 import { createFeedbackSchema, updateFeedbackSchema } from "../validators/feedbackSchemas";
 
+function getParamId(req: Request): string | null {
+  const raw = (req.params as any).id as unknown;
+
+  if (typeof raw === "string") return raw;
+  if (Array.isArray(raw) && typeof raw[0] === "string") return raw[0];
+
+  return null;
+}
+
 export async function createFeedback(req: Request, res: Response) {
   const parsed = createFeedbackSchema.safeParse(req.body);
   if (!parsed.success) {
@@ -31,7 +40,7 @@ export async function listFeedbacks(req: Request, res: Response) {
     sort = "createdAt",
     order = "desc",
     page = "1",
-    pageSize = "10"
+    pageSize = "10",
   } = req.query as Record<string, string>;
 
   const pageNum = Math.max(1, Number(page) || 1);
@@ -44,22 +53,22 @@ export async function listFeedbacks(req: Request, res: Response) {
 
   if (q && q.trim()) {
     where.OR = [
-  { title: { contains: q.trim() } },
-  { message: { contains: q.trim() } }
-];
+      { title: { contains: q.trim() } },
+      { message: { contains: q.trim() } },
+    ];
   }
 
-  const sortField = (sort === "updatedAt" || sort === "createdAt") ? sort : "createdAt";
-  const sortOrder = (order === "asc" || order === "desc") ? order : "desc";
+  const sortField = sort === "updatedAt" || sort === "createdAt" ? sort : "createdAt";
+  const sortOrder = order === "asc" || order === "desc" ? order : "desc";
 
   const [items, total] = await Promise.all([
     prisma.feedback.findMany({
       where,
       orderBy: { [sortField]: sortOrder },
       skip,
-      take: pageSizeNum
+      take: pageSizeNum,
     }),
-    prisma.feedback.count({ where })
+    prisma.feedback.count({ where }),
   ]);
 
   return res.json({
@@ -68,13 +77,14 @@ export async function listFeedbacks(req: Request, res: Response) {
       total,
       page: pageNum,
       pageSize: pageSizeNum,
-      totalPages: Math.ceil(total / pageSizeNum)
-    }
+      totalPages: Math.ceil(total / pageSizeNum),
+    },
   });
 }
 
 export async function getFeedbackById(req: Request, res: Response) {
-  const { id } = req.params;
+  const id = getParamId(req);
+  if (!id) return res.status(400).json({ error: "Invalid id" });
 
   const item = await prisma.feedback.findUnique({ where: { id } });
   if (!item) return res.status(404).json({ error: "Feedback not found" });
@@ -83,7 +93,8 @@ export async function getFeedbackById(req: Request, res: Response) {
 }
 
 export async function updateFeedback(req: Request, res: Response) {
-  const { id } = req.params;
+  const id = getParamId(req);
+  if (!id) return res.status(400).json({ error: "Invalid id" });
 
   const parsed = updateFeedbackSchema.safeParse(req.body);
   if (!parsed.success) {
@@ -93,7 +104,7 @@ export async function updateFeedback(req: Request, res: Response) {
   try {
     const updated = await prisma.feedback.update({
       where: { id },
-      data: parsed.data
+      data: parsed.data,
     });
     return res.json(updated);
   } catch {
@@ -102,7 +113,8 @@ export async function updateFeedback(req: Request, res: Response) {
 }
 
 export async function deleteFeedback(req: Request, res: Response) {
-  const { id } = req.params;
+  const id = getParamId(req);
+  if (!id) return res.status(400).json({ error: "Invalid id" });
 
   try {
     await prisma.feedback.delete({ where: { id } });

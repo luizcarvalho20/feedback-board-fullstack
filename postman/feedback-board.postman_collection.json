@@ -1,0 +1,69 @@
+{
+  "info": {
+    "name": "Feedback Board - API",
+    "_postman_id": "b4b6c6c0-0000-0000-0000-000000000000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "Create Feedback",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Bug no login\",\n  \"message\": \"Erro 500 ao entrar\",\n  \"type\": \"bug\"\n}"
+        },
+        "url": "{{baseUrl}}/feedbacks"
+      }
+    },
+    {
+      "name": "List Feedbacks",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/feedbacks"
+      }
+    },
+    {
+      "name": "List Feedbacks (filters)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/feedbacks?type=bug&status=open&q=login&page=1&pageSize=10"
+      }
+    },
+    {
+      "name": "Get Feedback by ID",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/feedbacks/{{id}}"
+      }
+    },
+    {
+      "name": "Update Feedback (status=done)",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"done\"\n}" },
+        "url": "{{baseUrl}}/feedbacks/{{id}}"
+      }
+    },
+    {
+      "name": "Delete Feedback",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/feedbacks/{{id}}"
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3001" },
+    { "key": "id", "value": "" }
+  ]
+}
