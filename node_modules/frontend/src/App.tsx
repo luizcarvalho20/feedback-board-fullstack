@@ -63,51 +63,66 @@ export default function App() {
       setError(e?.message || "Erro ao criar");
     }
   }
-  async function handleChangeStatus(id: string, status: FeedbackStatus) {
-  setBusyId(id);
-  setError(null);
-  try {
-    await updateFeedback(id, { status });
-    await load();
-  } catch (e: any) {
-    setError(e?.message || "Erro ao atualizar status");
-  } finally {
-    setBusyId(null);
-  }
-}
 
-async function handleDelete(id: string) {
-  setBusyId(id);
-  setError(null);
-  try {
-    await deleteFeedback(id);
-    await load();
-  } catch (e: any) {
-    setError(e?.message || "Erro ao excluir");
-  } finally {
-    setBusyId(null);
+  async function handleChangeStatus(id: string, status: FeedbackStatus) {
+    setBusyId(id);
+    setError(null);
+    try {
+      await updateFeedback(id, { status });
+      await load();
+    } catch (e: any) {
+      setError(e?.message || "Erro ao atualizar status");
+    } finally {
+      setBusyId(null);
+    }
   }
-}
+
+  async function handleDelete(id: string) {
+    setBusyId(id);
+    setError(null);
+    try {
+      await deleteFeedback(id);
+      await load();
+    } catch (e: any) {
+      setError(e?.message || "Erro ao excluir");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: 16, fontFamily: "system-ui" }}>
-      <h1>Feedback Board</h1>
+      <h1 data-testid="page-title">Feedback Board</h1>
 
       <section style={{ marginBottom: 24 }}>
         <h2>Criar feedback</h2>
         <form onSubmit={onSubmit} style={{ display: "grid", gap: 8 }}>
-          <input placeholder="Título" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input
+            data-testid="create-title"
+            placeholder="Título"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+
           <textarea
+            data-testid="create-message"
             placeholder="Mensagem"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={4}
           />
-          <select value={newType} onChange={(e) => setNewType(e.target.value as FeedbackType)}>
+
+          <select
+            data-testid="create-type"
+            value={newType}
+            onChange={(e) => setNewType(e.target.value as FeedbackType)}
+          >
             <option value="bug">bug</option>
             <option value="idea">idea</option>
             <option value="other">other</option>
           </select>
-          <button type="submit" disabled={!title || !message}>
+
+          <button data-testid="create-submit" type="submit" disabled={!title || !message}>
             Enviar
           </button>
         </form>
@@ -117,6 +132,7 @@ async function handleDelete(id: string) {
         <h2>Filtros</h2>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <input
+            data-testid="filter-q"
             placeholder="Buscar (q)"
             value={q}
             onChange={(e) => {
@@ -126,6 +142,7 @@ async function handleDelete(id: string) {
           />
 
           <select
+            data-testid="filter-type"
             value={type}
             onChange={(e) => {
               setType(e.target.value as any);
@@ -139,6 +156,7 @@ async function handleDelete(id: string) {
           </select>
 
           <select
+            data-testid="filter-status"
             value={status}
             onChange={(e) => {
               setStatus(e.target.value as any);
@@ -152,6 +170,7 @@ async function handleDelete(id: string) {
           </select>
 
           <button
+            data-testid="filters-clear"
             onClick={() => {
               setQ("");
               setType("");
@@ -161,12 +180,15 @@ async function handleDelete(id: string) {
           >
             Limpar
           </button>
-          <button onClick={load}>Recarregar</button>
+
+          <button data-testid="filters-reload" onClick={load}>
+            Recarregar
+          </button>
         </div>
       </section>
 
       {error && (
-        <div style={{ marginTop: 12, padding: 12, border: "1px solid #ccc" }}>
+        <div data-testid="error-box" style={{ marginTop: 12, padding: 12, border: "1px solid #ccc" }}>
           <strong>Erro:</strong> {error}
         </div>
       )}
@@ -175,29 +197,35 @@ async function handleDelete(id: string) {
         <h2>Lista</h2>
 
         {loading ? (
-          <p>Carregando...</p>
+          <p data-testid="loading">Carregando...</p>
         ) : (
-          <div style={{ display: "grid", gap: 10 }}>
+          <div data-testid="feedback-list" style={{ display: "grid", gap: 10 }}>
             {items.map((f) => (
               <FeedbackCard
-               key={f.id}
-               item={f}
-               busy={busyId === f.id}
-               onChangeStatus={handleChangeStatus}
-               onDelete={handleDelete}
-  />
-         ))}
+                key={f.id}
+                item={f}
+                busy={busyId === f.id}
+                onChangeStatus={handleChangeStatus}
+                onDelete={handleDelete}
+              />
+            ))}
 
-            {items.length === 0 && <p>Nenhum feedback encontrado.</p>}
+            {items.length === 0 && <p data-testid="empty-state">Nenhum feedback encontrado.</p>}
           </div>
         )}
 
         <div style={{ marginTop: 16, display: "flex", gap: 8, alignItems: "center" }}>
-          <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+          <button data-testid="pagination-prev" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
             Anterior
           </button>
-          <span>Página {page}</span>
-          <button disabled={items.length < pageSize} onClick={() => setPage((p) => p + 1)}>
+
+          <span data-testid="pagination-page">Página {page}</span>
+
+          <button
+            data-testid="pagination-next"
+            disabled={items.length < pageSize}
+            onClick={() => setPage((p) => p + 1)}
+          >
             Próxima
           </button>
         </div>
