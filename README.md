@@ -1,77 +1,200 @@
-# feedback-board-fullstack
+# 📌 Feedback Board Fullstack
 
-Projeto fullstack em formato monorepo usando workspaces.
+Projeto **Feedback Board Fullstack** --- uma aplicação completa
+(frontend + backend) para cadastrar, listar, filtrar, atualizar e
+excluir feedbacks, com testes automatizados e integração contínua (CI).
 
-## Estrutura do projeto
+------------------------------------------------------------------------
 
-- apps/backend → API em Express + TypeScript
-- apps/frontend → Frontend em React + Vite + TypeScript
+## 🚀 Visão Geral
 
-## Requisitos
+Essa aplicação foi desenvolvida durante o Projeto 2 do roadmap
+Fullstack, implementando:
 
-- Node.js 18+ (ou 20+)
-- NPM
-- Git
+-   ✔️ API REST com Node.js, Express e Prisma\
+-   ✔️ Banco de dados SQLite\
+-   ✔️ Frontend com React + Vite\
+-   ✔️ Testes de integração (Jest + Supertest)\
+-   ✔️ Testes E2E com Playwright\
+-   ✔️ Docker + Docker Compose\
+-   ✔️ CI com GitHub Actions
 
-## Instalação
+------------------------------------------------------------------------
 
-Na raiz do projeto, execute:
+## 📁 Estrutura do Projeto
 
+    feedback-board-fullstack/
+    ├── apps/
+    │   ├── backend/              # API Node + Express
+    │   └── frontend/             # App React + Vite
+    ├── docker-compose.yml        # Docker Compose
+    ├── .github/workflows/ci.yml  # Pipeline de CI (GitHub Actions)
+    ├── package.json
+    ├── prisma/
+    ├── README.md
+    └── ...
+
+------------------------------------------------------------------------
+
+## 🔧 Tecnologias
+
+### Backend
+
+-   Node.js
+-   Express
+-   Prisma ORM
+-   Jest + Supertest
+
+### Frontend
+
+-   React
+-   Vite
+-   Playwright
+
+### Containers & CI
+
+-   Docker & Docker Compose
+-   GitHub Actions
+
+------------------------------------------------------------------------
+
+## 📦 Pré-requisitos
+
+-   Node.js (v20+)
+-   npm
+-   Docker (opcional)
+-   Git
+
+------------------------------------------------------------------------
+
+## 🛠️ Setup Local --- Backend
+
+``` bash
+cd apps/backend
 npm install
+npx prisma generate
+npx prisma migrate dev --name init
+npm run dev
+```
 
-## Rodando o backend
+API disponível em:
 
-Na raiz do projeto, execute:
+    http://localhost:3001
 
-npm run dev:backend
+------------------------------------------------------------------------
 
-O backend irá subir em:
+## 🛠️ Setup Local --- Frontend
 
-http://localhost:3001
+``` bash
+cd apps/frontend
+npm install
+npm run dev
+```
 
-Teste de saúde:
+Frontend disponível em:
 
-http://localhost:3001/health
+    http://localhost:5173
 
-## Rodando o frontend
+------------------------------------------------------------------------
 
-Na raiz do projeto, execute:
+## 📄 API Endpoints
 
-npm run dev:frontend
+### Health
 
-O frontend irá subir normalmente em:
+    GET /health
 
-http://localhost:5173
+### Feedbacks
 
-## Variáveis de ambiente (Frontend)
+  Método   Rota             Descrição
+  -------- ---------------- --------------------
+  POST     /feedbacks       Criar feedback
+  GET      /feedbacks       Listar feedbacks
+  GET      /feedbacks/:id   Buscar por ID
+  PATCH    /feedbacks/:id   Atualizar feedback
+  DELETE   /feedbacks/:id   Remover feedback
 
-Arquivo: apps/frontend/.env
+------------------------------------------------------------------------
 
-Conteúdo:
+## 🎯 Filtros (GET /feedbacks)
 
-VITE_API_URL=http://localhost:3001
+-   `type` = bug \| idea \| other\
+-   `status` = open \| planned \| done\
+-   `q` = busca por texto\
+-   `sort` = createdAt \| updatedAt\
+-   `order` = asc \| desc\
+-   `page` = número da página\
+-   `pageSize` = itens por página
 
-## Scripts úteis (na raiz)
+------------------------------------------------------------------------
 
-- npm run dev:backend → roda só o backend
-- npm run dev:frontend → roda só o frontend
-- npm run dev → roda backend e frontend juntos (se suportado no seu terminal)
+## 🧪 Testes Backend
 
-## Objetivo do projeto
+``` bash
+cd apps/backend
+npm test
+```
 
-Criar um sistema de Feedback Board com:
+------------------------------------------------------------------------
 
-- API REST em Node + Express
-- Frontend em React
-- CRUD de feedbacks
-- Filtros e busca
-- Testes automatizados
-- Documentação
-- Boas práticas de arquitetura e organização de código
+## 🌐 Testes E2E (Playwright)
 
-## Status
+``` bash
+cd apps/frontend
+npx playwright install
+npm run test:e2e
+```
 
-Projeto em desenvolvimento
+------------------------------------------------------------------------
 
-## Autor
-Luiz Felipe Carvalho.
+## 🐳 Docker
+
+``` bash
+docker compose up --build
+```
+
+-   Frontend: http://localhost:5173\
+-   Backend: http://localhost:3001
+
+------------------------------------------------------------------------
+
+## ⚙️ CI (GitHub Actions)
+
+Pipeline configurado em:
+
+    .github/workflows/ci.yml
+
+O CI executa: - Testes do backend - Testes E2E do frontend
+
+------------------------------------------------------------------------
+
+## 📘 Postman
+
+Importe a coleção e use:
+
+    baseUrl = http://localhost:3001
+
+------------------------------------------------------------------------
+
+## 🧾 Variáveis de Ambiente
+
+Frontend:
+
+    VITE_API_URL=http://localhost:3001
+
+------------------------------------------------------------------------
+
+## 📌 Observações
+
+-   Projeto em monorepo (frontend + backend).
+-   Pode rodar localmente ou via Docker.
+-   Inclui testes automatizados e CI.
+
+------------------------------------------------------------------------
+
+## 📄 Licença
+
+Projeto open-source para fins de estudo.
+
+## 👤 Autor
+
+Luiz Felipe Carvalho 
