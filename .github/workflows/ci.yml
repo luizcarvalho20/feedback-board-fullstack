@@ -62,22 +62,43 @@ jobs:
         working-directory: apps/frontend
         run: npx playwright install --with-deps
 
+      # ✅ Prisma também no job e2e (é outro runner)
+      - name: Generate Prisma Client (e2e)
+        working-directory: apps/backend
+        env:
+          DATABASE_URL: file:./dev.db
+        run: npx prisma generate
+
+      - name: Run migrations (e2e)
+        working-directory: apps/backend
+        env:
+          NODE_ENV: test
+          DATABASE_URL: file:./dev.db
+        run: npx prisma migrate dev --name e2e_ci
+
+      # ✅ Sobe backend e mantém vivo (nohup)
       - name: Start backend
         working-directory: apps/backend
         env:
           NODE_ENV: test
+          DATABASE_URL: file:./dev.db
+          PORT: 3001
         run: |
-          npm run dev &
-      
+          nohup npm run dev > backend.log 2>&1 &
+          echo "Backend iniciado"
+
+      # ✅ Sobe frontend e mantém vivo (nohup) + strictPort
       - name: Start frontend
         working-directory: apps/frontend
         env:
           VITE_API_URL: http://localhost:3001
         run: |
-          npm run dev -- --host 0.0.0.0 --port 5173 &
+          nohup npm run dev -- --host 0.0.0.0 --port 5173 --strictPort > frontend.log 2>&1 &
+          echo "Frontend iniciado"
 
+      # ✅ Timeout pra não travar infinito
       - name: Wait for servers
-        run: npx wait-on http://localhost:3001/health http://localhost:5173
+        run: npx wait-on -t 60000 http://localhost:3001/health http://localhost:5173
 
       - name: Run E2E tests
         working-directory: apps/frontend
@@ -85,3 +106,12 @@ jobs:
           E2E_BASE_URL: http://localhost:5173
           E2E_API_URL: http://localhost:3001
         run: npm run test:e2e
+
+      # (Opcional) Se falhar, exibe logs no final pra debug
+      - name: Mostrar logs (se falhar)
+        if: failure()
+        run: |
+          echo "===== BACKEND LOG ====="
+          cat apps/backend/backend.log || true
+          echo "===== FRONTEND LOG ====="
+          cat apps/frontend/frontend.log || true
