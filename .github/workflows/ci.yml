@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+        working-directory: .
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run migrations (test)
+        run: |
+          NODE_ENV=test npx prisma migrate dev --name ci_test
+        env:
+          NODE_ENV: test
+
+      - name: Run backend tests
+        run: npm test
+        env:
+          NODE_ENV: test
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: backend-tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: apps/frontend
+        run: npx playwright install --with-deps
+
+      - name: Start backend
+        working-directory: apps/backend
+        run: |
+          npm run dev &
+        env:
+          NODE_ENV: test
+
+      - name: Start frontend
+        working-directory: apps/frontend
+        run: |
+          npm run dev -- --host 0.0.0.0 --port 5173 &
+        env:
+          VITE_API_URL: http://localhost:3001
+
+      - name: Run E2E
+        working-directory: apps/frontend
+        run: npm run test:e2e
+        env:
+          E2E_BASE_URL: http://localhost:5173
+          E2E_API_URL: http://localhost:3001

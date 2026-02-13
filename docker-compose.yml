@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: "file:./dev.db"
+    working_dir: /app/apps/backend
+    command: sh -c "npx prisma migrate dev --name init && npm run dev"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: "http://localhost:3001"
+    working_dir: /app/apps/frontend
+    depends_on:
+      - backend
