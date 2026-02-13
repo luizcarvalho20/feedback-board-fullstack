@@ -15,5 +15,8 @@
   "dependencies": {
     "@prisma/client": "^7.3.0",
     "prisma": "^7.3.0"
+  },
+  "devDependencies": {
+    "wait-on": "^9.0.4"
   }
 }
