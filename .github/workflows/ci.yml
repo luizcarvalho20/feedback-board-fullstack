@@ -23,19 +23,22 @@ jobs:
 
       - name: Generate Prisma Client
         working-directory: apps/backend
+        env:
+          DATABASE_URL: file:./dev.db
         run: npx prisma generate
 
       - name: Run migrations (test)
         working-directory: apps/backend
         env:
           NODE_ENV: test
-        run: |
-          npx prisma migrate dev --name ci_test
+          DATABASE_URL: file:./dev.db
+        run: npx prisma migrate dev --name ci_test
 
       - name: Run backend tests
         working-directory: apps/backend
         env:
           NODE_ENV: test
+          DATABASE_URL: file:./dev.db
         run: npm test
 
   e2e:
